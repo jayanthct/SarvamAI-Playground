@@ -68,7 +68,33 @@
   font-style: normal;
 }
 
+@import "tailwindcss";
+
 :root {
   --font-primary: 'Matter', sans-serif;
   --font-secondary: 'SeasonMix', serif;
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--fs-12);
 }
