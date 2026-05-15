@@ -68,6 +68,8 @@
   font-style: normal;
 }
 
+@import "tailwindcss";
+
 :root {
   --font-primary: 'Matter', sans-serif;
   --font-secondary: 'SeasonMix', serif;
