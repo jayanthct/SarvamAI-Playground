@@ -16,6 +16,7 @@ const Chat = () => {
 
       <div className="w-full max-w-3xl">
         <Textarea />
+        {/* <p className='font-primary text-center text-(--primary-text) opacity-50'>Press ⏎ Enter to Send</p> */}
       </div>
     </main>
   );
