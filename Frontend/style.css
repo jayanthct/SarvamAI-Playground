@@ -70,7 +70,7 @@
 
 @import "tailwindcss";
 
-:root {
+@theme {
   --font-primary: 'Matter', sans-serif;
   --font-secondary: 'SeasonMix', serif;
   --fs-12: 12px;
@@ -78,6 +78,8 @@
   --fs-16: 16px;
   --fs-20: 20px;
   --fs-24: 24px;
+  --primary-text: #666666;
+  --secondary-text: #1F1F1F;
 }
 
 *,
@@ -95,6 +97,5 @@ body {
 }
 
 body {
-  font-family: var(--font-primary);
   font-size: var(--fs-12);
 }
