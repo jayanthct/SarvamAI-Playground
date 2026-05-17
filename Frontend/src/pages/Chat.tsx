@@ -87,10 +87,10 @@ const Chat = () => {
     }
   }, [prompt]);
 
-  const handleStop = useCallback(() => {
-    abortRef.current?.abort();
-    setIsStreaming(false);
-  }, []);
+  // const handleStop = useCallback(() => {
+  //   abortRef.current?.abort();
+  //   setIsStreaming(false);
+  // }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -118,6 +118,8 @@ const Chat = () => {
             <p className="font-primary text-(--primary-text)">
               What&apos;s on your Mind!
             </p>
+            <p>{tokenCount}</p>
+            <p>{tokensPerSecond}</p>
           </div>
         </div>
       )}
