@@ -3,15 +3,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import micIcon from '../../Assets/Icons/mic.svg';
 import sendIcon from '../../Assets/Icons/send.svg';
 import muteIcon from '../../Assets/Icons/mute.svg';
+import { useChat } from '../context/ChatContext';
 
 const MAX_HEIGHT = 144;
 
 const Textarea = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<InstanceType<typeof SpeechRecognition> | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const initialTextRef = useRef<string>('');
 
-  const [prompt, setPrompt] = useState('');
+  const { prompt, setPrompt, setIsSubmitted } = useChat();
   const [isListening, setIsListening] = useState(false);
 
   const hasPrompt = prompt.trim().length > 0;
@@ -78,8 +79,9 @@ const Textarea = () => {
 
   const handleSend = useCallback(() => {
     if (!hasPrompt) return;
+    setIsSubmitted(true);
     console.log(prompt);
-  }, [hasPrompt, prompt]);
+  }, [hasPrompt, prompt, setIsSubmitted]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
