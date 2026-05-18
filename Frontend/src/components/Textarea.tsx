@@ -107,6 +107,17 @@ const Textarea = ({ isStreaming, onStop }: TextareaProps) => {
     textareaRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isStreaming && onStop) {
+        onStop();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isStreaming, onStop]);
+
   return (
     <div
       style={{
