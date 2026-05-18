@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/jayanthct/SarvamAI-Playground/main/src/Assets/Images/logo.svg" alt="SarvamAI Playground" height="80" />
+<img src="https://www.sarvam.ai/favicon.svg" alt="SarvamAI Playground" height="80" />
 
 # SarvamAI — On-Device Frontend Intern Assignment
 
