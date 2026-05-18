@@ -25,7 +25,7 @@ const Chat = () => {
     setChunks1('');
     setChunks2('');
 
-    setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+    setMessages([{ role: 'user', content: prompt }, { role: 'assistant', content: '' }]);
 
     abortRef.current = new AbortController();
     startTimeRef.current = Date.now();
@@ -100,17 +100,13 @@ const Chat = () => {
     } finally {
       setIsStreaming(false);
       setPrompt('');
+      setMessages([{ role: 'user', content: prompt }, { role: 'assistant', content: '' }]);
     }
   }, [prompt, setMessages, setPrompt]);
 
   const handleStop = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => abortRef.current?.abort();
   }, []);
 
   useEffect(() => {
@@ -120,8 +116,22 @@ const Chat = () => {
     }
   }, [isSubmitted, startStreaming, setIsSubmitted]);
 
+  console.log(messages);
+
   return (
     <main className="grow flex flex-col items-center justify-center p-4 gap-6">
+
+      {messages.length > 0 &&
+        <div className='w-full flex justify-between items-center' style={{ padding: '0 10%' }}>
+          <div className='flex flex-col'>
+            <p className='font-secondary text-xl text-(--secondary-text)'>SarvamAI - Playground</p>
+            <p className='font-primary text-(--primary-text)'>Frontend Intern Assignment</p>
+          </div>
+          <div className='w-fit self-end rounded-md border bg-[#F1F1F1] border-[#dedede]' style={{ padding: '12px', borderRadius: '12px 0 12px 12px' }}>
+            <p className='font-primary text-(--primary-text)'>{messages?.[0].content}</p>
+          </div>
+        </div>
+      }
 
       {messages.length === 0 && !isStreaming && (
         <div className="flex flex-col items-center gap-4">
