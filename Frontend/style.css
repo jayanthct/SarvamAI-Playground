@@ -99,3 +99,7 @@ body {
 body {
   font-size: var(--fs-12);
 }
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
