@@ -7,7 +7,12 @@ import { useChat } from '../context/ChatContext';
 
 const MAX_HEIGHT = 144;
 
-const Textarea = () => {
+interface TextareaProps {
+  isStreaming?: boolean;
+  onStop?: () => void;
+}
+
+const Textarea = ({ isStreaming, onStop }: TextareaProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const initialTextRef = useRef<string>('');
@@ -87,10 +92,10 @@ const Textarea = () => {
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        handleSend();
+        if (!isStreaming) handleSend();
       }
     },
-    [handleSend]
+    [handleSend, isStreaming]
   );
 
   // Cleanup recognition on unmount
@@ -109,7 +114,7 @@ const Textarea = () => {
         boxShadow:
           '0 859px 240px 0 rgba(0,0,0,.00),0 550px 220px 0 rgba(0,0,0,.00),0 309px 185px 0 rgba(0,0,0,.01),0 137px 137px 0 rgba(0,0,0,.02),0 34px 76px 0 rgba(0,0,0,.02)',
       }}
-      className="flex items-center gap-2 bg-white border border-[#F0F0F0] rounded-[28px] transition-all focus-within:border-black focus-within:ring-2 focus-within:ring-black/10"
+      className="flex items-center gap-2 bg-white border border-[#dedede] rounded-[28px] transition-all focus-within:border-black focus-within:ring-2 focus-within:ring-black/10"
     >
       {isListening ? (
         <>
@@ -143,6 +148,7 @@ const Textarea = () => {
       ) : (
         <>
           <textarea
+            disabled={isStreaming}
             ref={textareaRef}
             rows={1}
             value={prompt}
@@ -157,17 +163,21 @@ const Textarea = () => {
 
           <button
             type="button"
-            aria-label={hasPrompt ? 'Send message' : 'Start voice input'}
-            title={hasPrompt ? 'Send message' : 'Start voice input'}
-            onClick={hasPrompt ? handleSend : startListening}
-            className={`w-[36px] h-[36px] shrink-0 flex items-center justify-center rounded-full cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${hasPrompt ? 'bg-black text-white' : 'opacity-80 hover:opacity-100 hover:bg-[#F0F0F0]'}`}
+            aria-label={isStreaming ? 'Stop streaming' : hasPrompt ? 'Send message' : 'Start voice input'}
+            title={isStreaming ? 'Stop streaming' : hasPrompt ? 'Send message' : 'Start voice input'}
+            onClick={isStreaming ? onStop : hasPrompt ? handleSend : startListening}
+            className={`w-[36px] h-[36px] shrink-0 flex items-center justify-center rounded-full cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${isStreaming ? 'bg-red-500 text-white' : hasPrompt ? 'bg-black text-white' : 'opacity-80 hover:opacity-100 hover:bg-[#F0F0F0]'}`}
           >
-            <img
-              src={hasPrompt ? sendIcon : micIcon}
-              alt=""
-              aria-hidden="true"
-              className="w-[18px] h-[18px]"
-            />
+            {isStreaming ? (
+              <div className="w-[14px] h-[14px] bg-white rounded-[2px]" />
+            ) : (
+              <img
+                src={hasPrompt ? sendIcon : micIcon}
+                alt="button"
+                aria-hidden="true"
+                className="w-[18px] h-[18px]"
+              />
+            )}
           </button>
         </>
       )}
