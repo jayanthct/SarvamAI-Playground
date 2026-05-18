@@ -24,7 +24,7 @@ SarvamAI Playground is a frontend developer portal built as part of a frontend i
 - **Inspect** and compare model outputs using a token-level diff view
 - **Monitor** real-time inference metrics as tokens stream in
 
-> **On-Device AI** means the model runs locally on the device — no cloud server required. This portal simulates the tooling engineers use to validate models before shipping them to a fleet of devices.
+> **On-Device AI** means the model runs locally on the device — no cloud server required. This portal simulates and mocks the tooling engineers use to validate models before shipping them to a fleet of devices.
 
 ---
 
@@ -73,7 +73,6 @@ Differences are highlighted at the **individual word/token level** — not by li
 |---|---|
 | 🟢 Green highlight | Token added in updated model |
 | 🔴 Red + strikethrough | Token removed from baseline |
-| 🟡 Yellow highlight | Token changed between versions |
 
 #### Custom Diff Algorithm
 The diffing algorithm is implemented from scratch — no external diff libraries used.
