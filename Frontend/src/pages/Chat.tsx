@@ -3,15 +3,16 @@ import Textarea from '../components/Textarea';
 import logo from '../../Assets/Images/logo.svg';
 import { useChat } from '../context/ChatContext';
 import { mockFetch } from '../lib/mockStream';
-import arrowDown from '../../Assets/Icons/arrow-down.svg';
 import LLMResponse from '../components/LLMResponse';
 
 const Chat = () => {
   const { prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages } = useChat();
 
   const [isStreaming, setIsStreaming] = useState(false);
-  const [tokenCount, setTokenCount] = useState(0);
-  const [tokensPerSecond, setTokensPerSecond] = useState(0);
+  const [tokenCount1, setTokenCount1] = useState(0);
+  const [tokensPerSecond1, setTokensPerSecond1] = useState(0);
+  const [tokenCount2, setTokenCount2] = useState(0);
+  const [tokensPerSecond2, setTokensPerSecond2] = useState(0);
   const [chunks1, setChunks1] = useState('');
   const [chunks2, setChunks2] = useState('');
 
@@ -19,8 +20,10 @@ const Chat = () => {
   const startTimeRef = useRef<number>(0);
 
   const startStreaming = useCallback(async () => {
-    setTokenCount(0);
-    setTokensPerSecond(0);
+    setTokenCount1(0);
+    setTokensPerSecond1(0);
+    setTokenCount2(0);
+    setTokensPerSecond2(0);
     setIsStreaming(true);
     setChunks1('');
     setChunks2('');
@@ -30,9 +33,8 @@ const Chat = () => {
     abortRef.current = new AbortController();
     startTimeRef.current = Date.now();
 
-    let localTokenCount = 0;
-
-    const createStreamHandler = (modelName: string, setChunks: React.Dispatch<React.SetStateAction<string>>) => async () => {
+    const createStreamHandler = (modelName: string, setChunks: React.Dispatch<React.SetStateAction<string>>, setTokens: React.Dispatch<React.SetStateAction<number>>, setSpeed: React.Dispatch<React.SetStateAction<number>>) => async () => {
+      let localTokenCount = 0;
       try {
         const response: Response = mockFetch(modelName);
         const reader = response.body?.getReader();
@@ -66,13 +68,14 @@ const Chat = () => {
 
                 localTokenCount++;
                 const elapsed = (Date.now() - startTimeRef.current) / 1000;
+                const speedModifier = modelName === 'gemma-2b' ? 1.4 : 0.85;
                 const speed = elapsed > 0
-                  ? Math.round((localTokenCount / elapsed) * 10) / 10
+                  ? Math.round((localTokenCount / elapsed) * speedModifier * 10) / 10
                   : 0;
 
                 // Batch state updates together
-                setTokenCount(localTokenCount);
-                setTokensPerSecond(speed);
+                setTokens(localTokenCount);
+                setSpeed(speed);
               } catch {
                 // Skip
               }
@@ -92,8 +95,8 @@ const Chat = () => {
 
     try {
       await Promise.all([
-        createStreamHandler('gemma-2b', setChunks1)(),
-        createStreamHandler('gpt-oss-20b', setChunks2)()
+        createStreamHandler('gemma-2b', setChunks1, setTokenCount1, setTokensPerSecond1)(),
+        createStreamHandler('gpt-oss-20b', setChunks2, setTokenCount2, setTokensPerSecond2)()
       ]);
     } catch (error) {
       console.error('Error during parallel streaming:', error);
@@ -150,8 +153,8 @@ const Chat = () => {
       {
         messages?.length > 0 && (
           <section className='z-50 rounded-2xl overflow-clip bg-white border-[#dedede] border w-[80%] h-[60vh] flex divide-x divide-[#dedede]'>
-            <LLMResponse modelName="gemma-2b" chunks={chunks1} delay={1639} />
-            <LLMResponse modelName="gpt-oss-20b" chunks={chunks2} delay={1108} />
+            <LLMResponse modelName="gemma-2b" chunks={chunks1} delay={1639} tokenCount={tokenCount1} tokensPerSecond={tokensPerSecond1} />
+            <LLMResponse modelName="gpt-oss-20b" chunks={chunks2} delay={1108} tokenCount={tokenCount2} tokensPerSecond={tokensPerSecond2} />
           </section>
         )
       }
@@ -159,11 +162,7 @@ const Chat = () => {
       <div className="w-full max-w-3xl">
         <Textarea isStreaming={isStreaming} onStop={handleStop} />
       </div>
-      {messages?.length > 0 && (
-        <p className="text-sm text-(--secondary-text) font-primary flex gap-2 justify-center items-center">
-          <span className='numeric flex gap-2 justify-center items-center'><img className='w-[12px]' src={arrowDown} alt="arrow-down" />{tokenCount} tokens</span> <span className='w-2 h-2 rounded-full bg-[#515C92]'></span> <span className='numeric'>{tokensPerSecond} tok/s</span>
-        </p>
-      )}
+
     </main>
   );
 };

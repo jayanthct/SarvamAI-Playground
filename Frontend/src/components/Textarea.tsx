@@ -125,7 +125,7 @@ const Textarea = ({ isStreaming, onStop }: TextareaProps) => {
         boxShadow:
           '0 859px 240px 0 rgba(0,0,0,.00),0 550px 220px 0 rgba(0,0,0,.00),0 309px 185px 0 rgba(0,0,0,.01),0 137px 137px 0 rgba(0,0,0,.02),0 34px 76px 0 rgba(0,0,0,.02)',
       }}
-      className="flex items-center gap-2 bg-white border border-[#dedede] rounded-[28px] transition-all focus-within:border-black focus-within:ring-2 focus-within:ring-black/10"
+      className="flex items-center gap-2 z-100 bg-white border border-[#dedede] rounded-[28px] transition-all focus-within:border-black focus-within:ring-2 focus-within:ring-black/10 focus-visible:ring-offset-10"
     >
       {isListening ? (
         <>
