@@ -105,6 +105,70 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+
+  /* Reduce overall padding and margins */
+  main.grow {
+    padding: 1rem;
+    gap: 2rem;
+  }
+
+  /* Chat container becomes full width */
+  .w-full {
+    padding: 0 5%;
+  }
+
+  /* Header article layout switches to column */
+  article.flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Home button smaller on mobile */
+  button[aria-label="Home"] {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* LLMResponse cards shrink to 90% width and adjust text size */
+  .relative.w-1\/2 {
+    width: 90% !important;
+  }
+
+  .font-secondary {
+    font-size: 1rem;
+  }
+
+  .font-primary {
+    font-size: 0.875rem;
+  }
+
+  /* Diff switch becomes slightly smaller */
+  button[role="switch"] {
+    height: 1.5rem;
+    width: 2.75rem;
+  }
+
+  button[role="switch"] span[aria-hidden] {
+    height: 1.2rem;
+    width: 1.2rem;
+  }
+
+  /* Diff summary text wraps nicely */
+  /* .flex.gap-2.text-(--secondary-text) {
+    flex-direction: column;
+    align-items: flex-start;
+  } */
+
+  /* Textarea grows to full width and reduces max height */
+  textarea {
+    max-height: 120px;
+  }
+}
+
+
 @keyframes shine {
   to {
     background-position: -200% center;
