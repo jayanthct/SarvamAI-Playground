@@ -10,7 +10,7 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![WCAG AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-16A05A?style=flat-square)](#accessibility)
 
-[**GitHub**](https://github.com/jayanthct/SarvamAI-Playground) · [**Figma Design**](https://www.figma.com/design/Ci9ix2eiqDKkAKxQwhgblm/SarvamAI---Playground?node-id=0-1&t=7amzDbsnxuVXxdDZ-1) · [**Live Demo**](#) · [**Video Walkthrough**](#)
+[**GitHub**](https://github.com/jayanthct/SarvamAI-Playground) · [**Figma Design**](https://www.figma.com/design/Ci9ix2eiqDKkAKxQwhgblm/SarvamAI---Playground?node-id=0-1&t=7amzDbsnxuVXxdDZ-1) · [**Live Demo**](https://sarvam-ai-playground.vercel.app/) · [**Video Walkthrough**](https://drive.google.com/file/d/1P9zR8YFwaMx0Iw6UDNPr4RLvWgMAo2oa/view?usp=sharing)
 
 </div>
 
