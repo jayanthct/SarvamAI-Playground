@@ -4,7 +4,7 @@ import logo from '../../Assets/Images/logo.svg';
 import { useChat } from '../context/ChatContext';
 import { mockFetch } from '../lib/mockStream';
 import LLMResponse from '../components/LLMResponse';
-import { lcsDiff } from '../lib/diffAlgorithm';
+import { lcsDiff, type DiffToken } from '../lib/diffAlgorithm';
 
 const Chat = () => {
   const { prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages, setShowDiff, showDiff, diffResult, setDiffResult } = useChat();
@@ -176,7 +176,7 @@ const Chat = () => {
         <div className='flex gap-2 text-(--secondary-text) font-primary self-start w-full' style={{ padding: '0 10%' }}>
           <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-red-500'></span>{'Removed: ' + diffResult.removed}</p>
           <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-green-500'></span>{'Added: ' + diffResult.added}</p>
-          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-yellow-500'></span>{'Edited: ' + diffResult.tokens.filter((token) => token.type === 'added' || token.type === 'removed').length}</p>
+          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-yellow-500'></span>{'Edited: ' + diffResult.tokens.filter((token: DiffToken) => token.type === 'added' || token.type === 'removed').length}</p>
         </div>
       ) : null}
 
