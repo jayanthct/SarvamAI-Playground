@@ -40,7 +40,7 @@ const LLMResponse = ({ modelName, chunks, delay = 0, tokenCount, tokensPerSecond
             {isWaiting ? (
                 <div className="flex self-start justify-center gap-2 items-center">
                     <img className='w-6 h-6' src={logo} alt="logo" />
-                    <p className='font-primary text-[12px] text-(--primary-text)'>Generating...</p>
+                    <p className='font-primary text-[12px] shiny-text'>Generating...</p>
                 </div>
             ) : (
                 <div className='flex-1 overflow-y-auto font-primary text-(--primary-text) whitespace-pre-wrap scrollbar-thin'>

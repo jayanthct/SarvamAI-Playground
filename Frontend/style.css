@@ -98,8 +98,27 @@ body {
 
 body {
   font-size: var(--fs-12);
+  white-space: nowrap;
 }
 
 .numeric {
   font-variant-numeric: tabular-nums;
+}
+
+@keyframes shine {
+  to {
+    background-position: -200% center;
+  }
+}
+
+.shiny-text {
+  background: linear-gradient(120deg,
+      var(--primary-text) 40%,
+      #cccccc 50%,
+      var(--primary-text) 60%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 2s linear infinite;
 }

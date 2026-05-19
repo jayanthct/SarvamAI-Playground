@@ -1,12 +1,17 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import Textarea from '../components/Textarea';
 import logo from '../../Assets/Images/logo.svg';
+import homeIcon from '../../Assets/Icons/home.svg';
 import { useChat } from '../context/ChatContext';
 import { mockFetch } from '../lib/mockStream';
 import LLMResponse from '../components/LLMResponse';
 import { lcsDiff, type DiffToken } from '../lib/diffAlgorithm';
+import { useNavigate } from 'react-router-dom';
 
 const Chat = () => {
+
+  const navigate = useNavigate();
+
   const { prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages, setShowDiff, showDiff, diffResult, setDiffResult } = useChat();
 
   const [isStreaming, setIsStreaming] = useState(false);
@@ -115,6 +120,22 @@ const Chat = () => {
     setIsStreaming(false);
   }, []);
 
+  const handleGoHome = useCallback(() => {
+    navigate('/');
+    setIsStreaming(false);
+    setMessages([]);
+    setPrompt('');
+    setChunks1('');
+    setChunks2('');
+    setTokenCount1(0);
+    setTokenCount2(0);
+    setTokensPerSecond1(0);
+    setTokensPerSecond2(0);
+    setShowDiff(false);
+    setDiffResult(null);
+    abortRef.current?.abort();
+  }, [setMessages, setPrompt, setShowDiff, setDiffResult, navigate]);
+
   useEffect(() => {
     if (isSubmitted) {
       startStreaming();
@@ -122,26 +143,62 @@ const Chat = () => {
     }
   }, [isSubmitted, startStreaming, setIsSubmitted]);
 
-  const handleClickofLCS = () => {
-    console.log(chunks1, chunks2);
-    console.log(typeof chunks1, typeof chunks2);
-
-    const diff = lcsDiff(chunks1, chunks2);
-    console.log(diff);
-    setDiffResult(diff);
-    setShowDiff(true);
+  const handleClickLCS = () => {
+    if (showDiff) {
+      setShowDiff(false);
+    } else {
+      const diff = lcsDiff(chunks1, chunks2);
+      setDiffResult(diff);
+      setShowDiff(true);
+    }
   }
 
   return (
     <main className="grow flex flex-col items-center justify-center p-4 gap-6">
 
-      <button onClick={handleClickofLCS} className='w-16 p-4 bg-blue-600'>ClickMe</button>
-
       {messages.length > 0 &&
         <div className='w-full flex justify-between items-center' style={{ padding: '0 10%' }}>
-          <div className='flex flex-col'>
-            <p className='font-secondary text-xl text-(--secondary-text)'>SarvamAI - Playground</p>
-            <p className='font-primary text-(--primary-text)'>Frontend Intern Assignment</p>
+          <article className='flex justify-center items-center gap-3'>
+            <button
+              type="button"
+              aria-label="Home"
+              title="Home"
+              onClick={handleGoHome}
+              className={`w-[36px] h-[36px] shrink-0 flex items-center justify-center rounded-full cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2`}
+            >
+              <div className="w-[14px] h-[14px] bg-white rounded-[2px]" >
+                <img
+                  src={homeIcon}
+                  alt="button"
+                  aria-hidden="true"
+                />
+              </div>
+            </button>
+            <div className='flex flex-col w-full'>
+              <p className='font-secondary text-xl text-(--secondary-text)'>SarvamAI - Playground</p>
+              <p className='font-primary text-(--primary-text)'>Frontend Intern Assignment</p>
+            </div>
+          </article>
+          <div className="flex items-center gap-3">
+            <span className="font-primary text-[14px] text-(--secondary-text) font-medium" id="show-diff-label">
+              Show Diff:
+            </span>
+            <button
+              type="button"
+              role="switch"
+              disabled={isStreaming}
+              aria-checked={showDiff}
+              aria-labelledby="show-diff-label"
+              onClick={handleClickLCS}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${showDiff ? 'bg-[#515C92]' : 'bg-gray-300'
+                }`}
+            >
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${showDiff ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+              />
+            </button>
           </div>
           <div className='w-fit self-end rounded-md border bg-[#F1F1F1] border-[#dedede]' style={{ padding: '12px', borderRadius: '12px 0 12px 12px' }}>
             <p className='font-primary text-(--primary-text)'>{messages?.[0].content}</p>
