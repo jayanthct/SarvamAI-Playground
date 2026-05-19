@@ -4,6 +4,8 @@ import logo from '../../Assets/Images/logo.svg';
 import gemma2b from '../../Assets/Images/gemini.svg';
 import gptoss20b from '../../Assets/Images/openai.svg';
 import arrowDown from '../../Assets/Icons/arrow-down.svg';
+import { useChat } from '../context/ChatContext';
+import { type DiffToken } from '../lib/diffAlgorithm';
 
 interface LLMResponseProps {
     modelName: string;
@@ -15,6 +17,7 @@ interface LLMResponseProps {
 
 const LLMResponse = ({ modelName, chunks, delay = 0, tokenCount, tokensPerSecond }: LLMResponseProps) => {
     const [isWaiting, setIsWaiting] = useState(delay > 0);
+    const { showDiff, diffResult } = useChat();
 
     useEffect(() => {
         if (delay > 0) {
@@ -41,7 +44,21 @@ const LLMResponse = ({ modelName, chunks, delay = 0, tokenCount, tokensPerSecond
                 </div>
             ) : (
                 <div className='flex-1 overflow-y-auto font-primary text-(--primary-text) whitespace-pre-wrap scrollbar-thin'>
-                    {chunks}
+                    {showDiff && diffResult ? (
+                        diffResult.tokens.map((token: DiffToken, index: number) => {
+                            const isLeft = modelName.toLowerCase().includes('gemma');
+                            if (isLeft && token.type === 'added') return null;
+                            if (!isLeft && token.type === 'removed') return null;
+
+                            let colorClass = '';
+                            if (token.type === 'added') colorClass = 'text-green-500 bg-green-500/10 px-0.5 rounded';
+                            if (token.type === 'removed') colorClass = 'text-red-500 bg-red-500/10 px-0.5 rounded line-through';
+
+                            return <span key={index} className={colorClass}>{token.word} </span>;
+                        })
+                    ) : (
+                        chunks
+                    )}
                 </div>
             )}
             <p className="absolute bottom-4 right-4 text-xs text-(--secondary-text) font-primary flex gap-2 justify-center items-center">

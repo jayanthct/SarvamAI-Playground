@@ -18,7 +18,7 @@ const Layout = () => {
             <img className='absolute right-0 top-1/2 -translate-y-1/2 h-80' src={flower} alt="flower" />
             <img className='absolute left-0 top-1/2 -translate-y-1/2 h-80 rotate-180' src={flower} alt="flower" />
             <Outlet />
-            {messages?.length === 0 && <p className='absolute bottom-2 w-full text-center font-primary text-(--primary-text)'>This is Prototype with mock responses, Not the real LLM</p>}
+            <p className='absolute bottom-2 w-full text-center font-primary text-(--primary-text)'>This is Prototype with mock responses, Not the real LLM</p>
         </div>
     )
 }

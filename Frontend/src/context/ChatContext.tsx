@@ -13,6 +13,10 @@ interface ChatContextType {
   setIsSubmitted: (isSubmitted: boolean) => void;
   messages: Message[];
   setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
+  showDiff: boolean;
+  setShowDiff: (showDiff: boolean) => void;
+  diffResult: any;
+  setDiffResult: (result: any) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -21,9 +25,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [prompt, setPrompt] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showDiff, setShowDiff] = useState<boolean>(false);
+  const [diffResult, setDiffResult] = useState<any>(null);
 
   return (
-    <ChatContext.Provider value={{ prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages }}>
+    <ChatContext.Provider value={{ prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages, showDiff, setShowDiff, diffResult, setDiffResult }}>
       {children}
     </ChatContext.Provider>
   );

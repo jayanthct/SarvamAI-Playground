@@ -4,9 +4,10 @@ import logo from '../../Assets/Images/logo.svg';
 import { useChat } from '../context/ChatContext';
 import { mockFetch } from '../lib/mockStream';
 import LLMResponse from '../components/LLMResponse';
+import { lcsDiff } from '../lib/diffAlgorithm';
 
 const Chat = () => {
-  const { prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages } = useChat();
+  const { prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages, setShowDiff, showDiff, diffResult, setDiffResult } = useChat();
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [tokenCount1, setTokenCount1] = useState(0);
@@ -27,6 +28,8 @@ const Chat = () => {
     setIsStreaming(true);
     setChunks1('');
     setChunks2('');
+    setShowDiff(false);
+    setDiffResult(null);
 
     setMessages([{ role: 'user', content: prompt }, { role: 'assistant', content: '' }]);
 
@@ -119,10 +122,20 @@ const Chat = () => {
     }
   }, [isSubmitted, startStreaming, setIsSubmitted]);
 
-  console.log(messages);
+  const handleClickofLCS = () => {
+    console.log(chunks1, chunks2);
+    console.log(typeof chunks1, typeof chunks2);
+
+    const diff = lcsDiff(chunks1, chunks2);
+    console.log(diff);
+    setDiffResult(diff);
+    setShowDiff(true);
+  }
 
   return (
     <main className="grow flex flex-col items-center justify-center p-4 gap-6">
+
+      <button onClick={handleClickofLCS} className='w-16 p-4 bg-blue-600'>ClickMe</button>
 
       {messages.length > 0 &&
         <div className='w-full flex justify-between items-center' style={{ padding: '0 10%' }}>
@@ -158,6 +171,14 @@ const Chat = () => {
           </section>
         )
       }
+
+      {showDiff && diffResult ? (
+        <div className='flex gap-2 text-(--secondary-text) font-primary self-start w-full' style={{ padding: '0 10%' }}>
+          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-red-500'></span>{'Removed: ' + diffResult.removed}</p>
+          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-green-500'></span>{'Added: ' + diffResult.added}</p>
+          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-yellow-500'></span>{'Edited: ' + diffResult.tokens.filter((token) => token.type === 'added' || token.type === 'removed').length}</p>
+        </div>
+      ) : null}
 
       <div className="w-full max-w-3xl">
         <Textarea isStreaming={isStreaming} onStop={handleStop} />

@@ -85,7 +85,6 @@ const Textarea = ({ isStreaming, onStop }: TextareaProps) => {
   const handleSend = useCallback(() => {
     if (!hasPrompt) return;
     setIsSubmitted(true);
-    console.log(prompt);
   }, [hasPrompt, prompt, setIsSubmitted]);
 
   const handleKeyDown = useCallback(
