@@ -23,9 +23,7 @@ SarvamAI Playground is a frontend developer portal built as part of a frontend i
 - **Test** on-device mock Two models inference through a live streaming playground
 - **Inspect** and compare model outputs using a token-level diff view
 - **Monitor** real-time inference metrics as tokens stream in
-
-> **On-Device AI** means the model runs locally on the device — no cloud server required. This portal simulates and mocks the tooling engineers use to validate models before shipping them to a fleet of devices.
-
+  
 ---
 
 ## Features
