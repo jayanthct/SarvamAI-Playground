@@ -153,6 +153,16 @@ const Chat = () => {
     }
   }
 
+  const handleModelTimeout = useCallback(() => {
+    abortRef.current?.abort();
+    setIsStreaming(false);
+  }, []);
+
+  const handleNetworkDrop = useCallback(() => {
+    abortRef.current?.abort();
+    setIsStreaming(false);
+  }, []);
+
   return (
     <main className="grow flex flex-col items-center justify-center p-4 gap-6">
 
@@ -179,26 +189,50 @@ const Chat = () => {
               <p className='font-primary text-(--primary-text)'>Frontend Intern Assignment</p>
             </div>
           </article>
-          <div className="flex items-center gap-3">
-            <span className="font-primary text-[14px] text-(--secondary-text) font-medium" id="show-diff-label">
-              Show Diff:
-            </span>
+          <div className='flex gap-4'>
             <button
               type="button"
-              role="switch"
-              disabled={isStreaming}
-              aria-checked={showDiff}
-              aria-labelledby="show-diff-label"
-              onClick={handleClickLCS}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${showDiff ? 'bg-[#515C92]' : 'bg-gray-300'
-                }`}
+              aria-label="Network Drops"
+              title="Network Drops"
+              disabled={!isStreaming}
+              onClick={handleNetworkDrop}
+              style={{ padding: '6px 10px', borderRadius: '12px', background: 'linear-gradient(rgb(255, 255, 255) 0%, rgb(240, 241, 245) 100%)', boxShadow: 'rgba(30, 32, 51, 0.14) 0px 0px 0px 1px inset;' }}
+              className='disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center border border-(--primary-text) transition-all duration-350 ease-[cubic-bezier(0.2,0,0,1)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2'
             >
-              <span
-                aria-hidden="true"
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${showDiff ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-              />
+              Network Drops
             </button>
+            <button
+              type="button"
+              aria-label="Model Timeout"
+              title="Model Timeout"
+              disabled={!isStreaming}
+              onClick={handleModelTimeout}
+              style={{ padding: '6px 10px', borderRadius: '12px', background: 'linear-gradient(rgb(255, 255, 255) 0%, rgb(240, 241, 245) 100%)', boxShadow: 'rgba(30, 32, 51, 0.14) 0px 0px 0px 1px inset;' }}
+              className='disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center border border-(--primary-text) transition-all duration-350 ease-[cubic-bezier(0.2,0,0,1)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2'
+            >
+              Model Timeout
+            </button>
+            <div className="flex items-center gap-3">
+              <span className="font-primary text-[14px] text-(--secondary-text) font-medium" id="show-diff-label">
+                Show Diff:
+              </span>
+              <button
+                type="button"
+                role="switch"
+                disabled={isStreaming}
+                aria-checked={showDiff}
+                aria-labelledby="show-diff-label"
+                onClick={handleClickLCS}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${showDiff ? 'bg-[#515C92]' : 'bg-gray-300'
+                  }`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${showDiff ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                />
+              </button>
+            </div>
           </div>
           <div className='w-fit self-end rounded-md border bg-[#F1F1F1] border-[#dedede]' style={{ padding: '12px', borderRadius: '12px 0 12px 12px' }}>
             <p className='font-primary text-(--primary-text)'>{messages?.[0].content}</p>
@@ -206,19 +240,21 @@ const Chat = () => {
         </div>
       }
 
-      {messages.length === 0 && !isStreaming && (
-        <div className="flex flex-col items-center gap-4">
-          <img src={logo} alt="sarvam.ai" className="h-20" />
-          <div className="flex flex-col justify-center items-center gap-1">
-            <p className="font-secondary text-xl text-(--secondary-text)">
-              Good Morning, Jayanth
-            </p>
-            <p className="font-primary text-(--primary-text)">
-              What&apos;s on your Mind!
-            </p>
+      {
+        messages.length === 0 && !isStreaming && (
+          <div className="flex flex-col items-center gap-4">
+            <img src={logo} alt="sarvam.ai" className="h-20" />
+            <div className="flex flex-col justify-center items-center gap-1">
+              <p className="font-secondary text-xl text-(--secondary-text)">
+                Good Morning, Jayanth
+              </p>
+              <p className="font-primary text-(--primary-text)">
+                What&apos;s on your Mind!
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {
         messages?.length > 0 && (
@@ -229,19 +265,20 @@ const Chat = () => {
         )
       }
 
-      {showDiff && diffResult ? (
-        <div className='flex gap-2 text-(--secondary-text) font-primary self-start w-full' style={{ padding: '0 10%' }}>
-          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-red-500'></span>{'Removed: ' + diffResult.removed}</p>
-          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-green-500'></span>{'Added: ' + diffResult.added}</p>
-          <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-yellow-500'></span>{'Edited: ' + diffResult.tokens.filter((token: DiffToken) => token.type === 'added' || token.type === 'removed').length}</p>
-        </div>
-      ) : null}
+      {
+        showDiff && diffResult ? (
+          <div className='flex gap-2 text-(--secondary-text) font-primary self-start w-full' style={{ padding: '0 10%' }}>
+            <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-red-500'></span>{'Removed: ' + diffResult.removed}</p>
+            <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-green-500'></span>{'Added: ' + diffResult.added}</p>
+            <p className='flex gap-2 items-center'><span className='w-2 h-2 rounded-[2px] bg-yellow-500'></span>{'Edited: ' + diffResult.tokens.filter((token: DiffToken) => token.type === 'added' || token.type === 'removed').length}</p>
+          </div>
+        ) : null
+      }
 
       <div className="w-full max-w-3xl">
         <Textarea isStreaming={isStreaming} onStop={handleStop} />
       </div>
-
-    </main>
+    </main >
   );
 };
 
