@@ -13,10 +13,11 @@ interface LLMResponseProps {
     delay?: number
     tokenCount: number;
     tokensPerSecond: number;
+    error?: string;
 }
 
-const LLMResponse = ({ modelName, chunks, delay = 0, tokenCount, tokensPerSecond }: LLMResponseProps) => {
-    const [isWaiting, setIsWaiting] = useState(delay > 0);
+const LLMResponse = ({ modelName, chunks, delay = 0, tokenCount, tokensPerSecond, error }: LLMResponseProps) => {
+    const [isWaiting, setIsWaiting] = useState<boolean>(delay > 0);
     const { showDiff, diffResult } = useChat();
 
     useEffect(() => {
@@ -58,6 +59,11 @@ const LLMResponse = ({ modelName, chunks, delay = 0, tokenCount, tokensPerSecond
                         })
                     ) : (
                         chunks
+                    )}
+                    {error && (
+                        <p role="alert" aria-live="assertive" className="font-primary text-red-500 text-[12px] bg-red-500/10 rounded text-center" style={{ margin: '2rem 0', padding: '0.8rem' }}>
+                            {error}
+                        </p>
                     )}
                 </div>
             )}

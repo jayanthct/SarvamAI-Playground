@@ -14,13 +14,15 @@ const Chat = () => {
 
   const { prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages, setShowDiff, showDiff, diffResult, setDiffResult } = useChat();
 
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [tokenCount1, setTokenCount1] = useState(0);
-  const [tokensPerSecond1, setTokensPerSecond1] = useState(0);
-  const [tokenCount2, setTokenCount2] = useState(0);
-  const [tokensPerSecond2, setTokensPerSecond2] = useState(0);
-  const [chunks1, setChunks1] = useState('');
-  const [chunks2, setChunks2] = useState('');
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const [tokenCount1, setTokenCount1] = useState<number>(0);
+  const [tokensPerSecond1, setTokensPerSecond1] = useState<number>(0);
+  const [tokenCount2, setTokenCount2] = useState<number>(0);
+  const [tokensPerSecond2, setTokensPerSecond2] = useState<number>(0);
+  const [chunks1, setChunks1] = useState<string>('');
+  const [chunks2, setChunks2] = useState<string>('');
+
+  const [error, setError] = useState<string>('');
 
   const abortRef = useRef<AbortController | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -156,11 +158,13 @@ const Chat = () => {
   const handleModelTimeout = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
+    setError('Model Timeout, Please Try Again Later');
   }, []);
 
   const handleNetworkDrop = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
+    setError('Network Drop, Check the Internet and Try Again');
   }, []);
 
   return (
@@ -259,8 +263,8 @@ const Chat = () => {
       {
         messages?.length > 0 && (
           <section className='z-50 rounded-2xl overflow-clip bg-white border-[#dedede] border w-[80%] h-[60vh] flex divide-x divide-[#dedede]'>
-            <LLMResponse modelName="gemma-2b" chunks={chunks1} delay={1639} tokenCount={tokenCount1} tokensPerSecond={tokensPerSecond1} />
-            <LLMResponse modelName="gpt-oss-20b" chunks={chunks2} delay={1108} tokenCount={tokenCount2} tokensPerSecond={tokensPerSecond2} />
+            <LLMResponse modelName="gemma-2b" chunks={chunks1} delay={1639} tokenCount={tokenCount1} tokensPerSecond={tokensPerSecond1} error={error} />
+            <LLMResponse modelName="gpt-oss-20b" chunks={chunks2} delay={1108} tokenCount={tokenCount2} tokensPerSecond={tokensPerSecond2} error={error} />
           </section>
         )
       }
