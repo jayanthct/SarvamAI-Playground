@@ -26,7 +26,7 @@ SarvamAI Playground is a frontend developer portal built as part of a frontend i
   
 ---
 
-## Features
+## Feature
 
 ### Part A — Inference Playground
 
