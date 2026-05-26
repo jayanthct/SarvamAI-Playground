@@ -17,6 +17,10 @@ interface ChatContextType {
   setShowDiff: (showDiff: boolean) => void;
   diffResult: any;
   setDiffResult: (result: any) => void;
+  currentInferencingEngine: 'ollama' | 'vllm';
+  setCurrentInferencingEngine: (engine: 'ollama' | 'vllm') => void;
+  isStreaming: boolean;
+  setIsStreaming: (isStreaming: boolean) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -27,9 +31,28 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showDiff, setShowDiff] = useState<boolean>(false);
   const [diffResult, setDiffResult] = useState<any>(null);
+  const [currentInferencingEngine, setCurrentInferencingEngine] = useState<'ollama' | 'vllm'>('ollama');
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
 
   return (
-    <ChatContext.Provider value={{ prompt, setPrompt, isSubmitted, setIsSubmitted, messages, setMessages, showDiff, setShowDiff, diffResult, setDiffResult }}>
+    <ChatContext.Provider
+      value={{
+        prompt,
+        setPrompt,
+        isSubmitted,
+        setIsSubmitted,
+        messages,
+        setMessages,
+        showDiff,
+        setShowDiff,
+        diffResult,
+        setDiffResult,
+        currentInferencingEngine,
+        setCurrentInferencingEngine,
+        isStreaming,
+        setIsStreaming,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
