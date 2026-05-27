@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import Textarea from '../components/Textarea';
 import logo from '../../Assets/Images/logo.svg';
 import ollama from '../../Assets/Images/ollama.svg';
@@ -7,6 +7,7 @@ import homeIcon from '../../Assets/Icons/home.svg';
 import { useChat } from '../context/ChatContext';
 import { useNavigate } from 'react-router-dom';
 import MessagesChat from '../components/MessagesChat';
+import { runOllama, runVLLM } from '../lib/inferenceModel';
 
 const Chat = () => {
 
@@ -23,32 +24,140 @@ const Chat = () => {
     setCurrentInferencingEngine,
     isStreaming,
     setIsStreaming,
+    setTokenCount,
+    setTokensPerSecond,
   } = useChat();
 
-  const abortRef = useRef<AbortController | null>(null);
-  const startTimeRef = useRef<number>(0);
+  const activeOllamaStreamRef = useRef<any>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const startStreaming = useCallback(async () => {
+    const currentPrompt = prompt;
+    if (!currentPrompt.trim()) return;
+
     setIsStreaming(true);
+    setTokenCount(0);
+    setTokensPerSecond(0);
 
-    setMessages([{ role: 'user', content: prompt }, { role: 'assistant', content: '' }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: currentPrompt },
+      { role: 'assistant', content: '' }
+    ]);
+    setPrompt('');
 
-    abortRef.current = new AbortController();
-    startTimeRef.current = Date.now();
-  }, [prompt, setMessages, setPrompt]);
+    const startTime = Date.now();
+    let currentTokens = 0;
+
+    abortControllerRef.current = new AbortController();
+
+    try {
+      if (currentInferencingEngine === 'ollama') {
+        const stream = await runOllama(currentPrompt);
+        if (!stream) {
+          throw new Error("Could not establish connection to Ollama");
+        }
+        activeOllamaStreamRef.current = stream;
+
+        for await (const chunk of stream) {
+          const content = chunk.message.content;
+          
+          setMessages((prev) => {
+            if (prev.length === 0) return prev;
+            const updated = [...prev];
+            const lastIdx = updated.length - 1;
+            if (updated[lastIdx].role === 'assistant') {
+              updated[lastIdx] = {
+                ...updated[lastIdx],
+                content: updated[lastIdx].content + content
+              };
+            }
+            return updated;
+          });
+
+          currentTokens += 1;
+          setTokenCount(currentTokens);
+
+          const elapsedSeconds = (Date.now() - startTime) / 1000;
+          if (elapsedSeconds > 0) {
+            setTokensPerSecond(Math.round(currentTokens / elapsedSeconds));
+          }
+        }
+      } else {
+        // vLLM Model Stream (simulated on frontend using unified iterator interface)
+        const stream = runVLLM(currentPrompt, abortControllerRef.current.signal);
+        
+        for await (const chunk of stream) {
+          const content = chunk.message.content;
+
+          setMessages((prev) => {
+            if (prev.length === 0) return prev;
+            const updated = [...prev];
+            const lastIdx = updated.length - 1;
+            if (updated[lastIdx].role === 'assistant') {
+              updated[lastIdx] = {
+                ...updated[lastIdx],
+                content: updated[lastIdx].content + content
+              };
+            }
+            return updated;
+          });
+
+          currentTokens += 1;
+          setTokenCount(currentTokens);
+
+          const elapsedSeconds = (Date.now() - startTime) / 1000;
+          if (elapsedSeconds > 0) {
+            setTokensPerSecond(Math.round(currentTokens / elapsedSeconds));
+          }
+        }
+      }
+    } catch (error: any) {
+      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+        console.log("Stream aborted by user");
+      } else {
+        console.error("Stream failed:", error);
+        setMessages((prev) => {
+          if (prev.length === 0) return prev;
+          const updated = [...prev];
+          const lastIdx = updated.length - 1;
+          if (updated[lastIdx].role === 'assistant') {
+            updated[lastIdx] = {
+              ...updated[lastIdx],
+              isError: true,
+              content: updated[lastIdx].content + "\n\n[Inference error occurred. Please check if your Ollama server is running.]"
+            };
+          }
+          return updated;
+        });
+      }
+    } finally {
+      setIsStreaming(false);
+      activeOllamaStreamRef.current = null;
+      abortControllerRef.current = null;
+    }
+  }, [prompt, setPrompt, currentInferencingEngine, setMessages, setIsStreaming, setTokenCount, setTokensPerSecond]);
 
   const handleStop = useCallback(() => {
-    abortRef.current?.abort();
+    if (currentInferencingEngine === 'ollama') {
+      activeOllamaStreamRef.current?.abort();
+    } else {
+      abortControllerRef.current?.abort();
+    }
     setIsStreaming(false);
-  }, []);
+  }, [currentInferencingEngine, setIsStreaming]);
 
   const handleGoHome = useCallback(() => {
     navigate('/');
     setIsStreaming(false);
     setMessages([]);
     setPrompt('');
-    abortRef.current?.abort();
-  }, [setMessages, setPrompt, navigate]);
+    if (currentInferencingEngine === 'ollama') {
+      activeOllamaStreamRef.current?.abort();
+    } else {
+      abortControllerRef.current?.abort();
+    }
+  }, [setMessages, setPrompt, navigate, currentInferencingEngine, setIsStreaming]);
 
   useEffect(() => {
     if (isSubmitted) {

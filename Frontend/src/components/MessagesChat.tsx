@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 import { useChat } from "../context/ChatContext";
 import gemma2b from '../../Assets/Images/gemini.svg';
 import arrowDown from '../../Assets/Icons/arrow-down.svg';
+import logo from '../../Assets/Images/logo.svg';
+import MarkdownRenderer from "./MarkdownRender";
 
 const MessagesChat = () => {
-    const { messages } = useChat();
+    const { messages, tokenCount, tokensPerSecond } = useChat();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -29,13 +31,24 @@ const MessagesChat = () => {
                             </div>
                         );
                     } else {
+                        if (!message.content) {
+                            return (
+                                <div key={index} className="flex self-start justify-center gap-2 items-center">
+                                    <img className='w-6 h-6' src={logo} alt="logo" />
+                                    <p className='font-primary text-[12px] shiny-text'>Generating...</p>
+                                </div>
+                            );
+                        }
                         return (
-                            <p
+                            <div
                                 key={index}
-                                className="self-start font-primary text-sm leading-relaxed text-(--primary-text)"
+                                className={`w-[70%] self-start font-primary text-sm leading-relaxed ${message.isError
+                                    ? "text-red-500 font-semibold"
+                                    : "text-(--primary-text)"
+                                    } markdown-content`}
                             >
-                                {message?.content}
-                            </p>
+                                <MarkdownRenderer content={message?.content || ""} />
+                            </div>
                         );
                     }
                 })}
@@ -47,7 +60,7 @@ const MessagesChat = () => {
                     <span className="font-primary text-(--primary-text)">Gemma3:1B</span>
                 </div>
                 <p className="text-xs text-(--secondary-text) font-primary flex gap-2 justify-center items-center">
-                    <span className='numeric flex gap-2 justify-center items-center'><img className='w-[12px]' src={arrowDown} alt="arrow-down" />{20} tokens</span> <span className='w-1 h-1 rounded-full bg-[#515C92]'></span> <span className='numeric'>{121} tok/s</span>
+                    <span className='numeric flex gap-2 justify-center items-center'><img className='w-[12px]' src={arrowDown} alt="arrow-down" />{tokenCount} tokens</span> <span className='w-1 h-1 rounded-full bg-[#515C92]'></span> <span className='numeric'>{tokensPerSecond} tok/s</span>
                 </p>
             </div>
         </section>
