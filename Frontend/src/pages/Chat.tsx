@@ -2,12 +2,12 @@ import { useEffect, useCallback, useRef } from 'react';
 import Textarea from '../components/Textarea';
 import logo from '../../Assets/Images/logo.svg';
 import ollama from '../../Assets/Images/ollama.svg';
-import vllm from '../../Assets/Images/vllm.svg';
+import llamacpp from '../../Assets/Images/llamacpp.svg';
 import homeIcon from '../../Assets/Icons/home.svg';
 import { useChat } from '../context/ChatContext';
 import { useNavigate } from 'react-router-dom';
 import MessagesChat from '../components/MessagesChat';
-import { runOllama, runVLLM } from '../lib/inferenceModel';
+import { runOllama, runLlamaCPP } from '../lib/inferenceModel';
 
 const Chat = () => {
 
@@ -61,7 +61,7 @@ const Chat = () => {
 
         for await (const chunk of stream) {
           const content = chunk.message.content;
-          
+
           setMessages((prev) => {
             if (prev.length === 0) return prev;
             const updated = [...prev];
@@ -84,9 +84,9 @@ const Chat = () => {
           }
         }
       } else {
-        // vLLM Model Stream (simulated on frontend using unified iterator interface)
-        const stream = runVLLM(currentPrompt, abortControllerRef.current.signal);
-        
+        // LlamaCPP Model Stream
+        const stream = runLlamaCPP(currentPrompt, abortControllerRef.current.signal);
+
         for await (const chunk of stream) {
           const content = chunk.message.content;
 
@@ -192,7 +192,7 @@ const Chat = () => {
             </div>
           </article>
           <div style={{ padding: '0 16px' }}>
-            <img src={currentInferencingEngine === 'vllm' ? vllm : ollama} alt="Model" className='w-20' />
+            <img src={currentInferencingEngine === 'llamacpp' ? llamacpp : ollama} alt="Model" className='w-20' />
           </div>
         </div>
       }
@@ -233,9 +233,9 @@ const Chat = () => {
 
               <label
                 style={{ padding: '16px 20px' }}
-                htmlFor="vllm"
-                aria-label="Select vLLM inferencing engine"
-                className={`flex justify-center items-center rounded-md border-2 cursor-pointer transition-all duration-200 ${currentInferencingEngine === "vllm"
+                htmlFor="llamacpp"
+                aria-label="Select LlamaCPP inferencing engine"
+                className={`flex justify-center items-center rounded-md border-2 cursor-pointer transition-all duration-200 ${currentInferencingEngine === "llamacpp"
                   ? "border-[#899CF8] bg-[#899CF8]/6"
                   : "border-[#F0F0F0] bg-white"
                   }`}
@@ -243,13 +243,13 @@ const Chat = () => {
                 <input
                   type="radio"
                   name="engineType"
-                  id="vllm"
-                  value="vllm"
-                  checked={currentInferencingEngine === 'vllm'}
-                  onChange={() => setCurrentInferencingEngine('vllm')}
+                  id="llamacpp"
+                  value="llamacpp"
+                  checked={currentInferencingEngine === 'llamacpp'}
+                  onChange={() => setCurrentInferencingEngine('llamacpp')}
                   className="hidden"
                 />
-                <img src={vllm} alt="vLLM" className="h-6 object-contain" />
+                <img src={llamacpp} alt="LlamaCPP" className="h-6 object-contain" />
               </label>
             </fieldset>
           </div>

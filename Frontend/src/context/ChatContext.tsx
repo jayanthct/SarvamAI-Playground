@@ -17,8 +17,8 @@ interface ChatContextType {
   setShowDiff: (showDiff: boolean) => void;
   diffResult: any;
   setDiffResult: (result: any) => void;
-  currentInferencingEngine: 'ollama' | 'vllm';
-  setCurrentInferencingEngine: (engine: 'ollama' | 'vllm') => void;
+  currentInferencingEngine: 'ollama' | 'llamacpp';
+  setCurrentInferencingEngine: (engine: 'ollama' | 'llamacpp') => void;
   isStreaming: boolean;
   setIsStreaming: (isStreaming: boolean) => void;
   tokenCount: number;
@@ -35,7 +35,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showDiff, setShowDiff] = useState<boolean>(false);
   const [diffResult, setDiffResult] = useState<any>(null);
-  const [currentInferencingEngine, setCurrentInferencingEngine] = useState<'ollama' | 'vllm'>('ollama');
+  const [currentInferencingEngine, setCurrentInferencingEngine] = useState<'ollama' | 'llamacpp'>('ollama');
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [tokenCount, setTokenCount] = useState<number>(0);
   const [tokensPerSecond, setTokensPerSecond] = useState<number>(0);

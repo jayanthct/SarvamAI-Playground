@@ -57,7 +57,7 @@ const MessagesChat = () => {
             <div className="relative flex w-full justify-between items-center">
                 <div className="flex items-center gap-2">
                     <img className="w-4 h-4" src={gemma2b} alt="gemma2b" />
-                    <span className="font-primary text-(--primary-text)">Gemma3:1B</span>
+                    <span className="font-primary text-(--primary-text)">Gemma3:1B-GGUF</span>
                 </div>
                 <p className="text-xs text-(--secondary-text) font-primary flex gap-2 justify-center items-center">
                     <span className='numeric flex gap-2 justify-center items-center'><img className='w-[12px]' src={arrowDown} alt="arrow-down" />{tokenCount} tokens</span> <span className='w-1 h-1 rounded-full bg-[#515C92]'></span> <span className='numeric'>{tokensPerSecond} tok/s</span>
